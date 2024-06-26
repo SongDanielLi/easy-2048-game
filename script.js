@@ -77,11 +77,11 @@ function move(direction) {
         addNewTile();
         renderBoard();
         scoreDisplay.textContent = score;
-		if (score > highScore) {
-			highScore = score;
-			highScoreDisplay.textContent = highScore;
-			localStorage.setItem('highScore', highScore);
-		}
+        if (score > highScore) {
+            highScore = score;
+            highScoreDisplay.textContent = highScore;
+            localStorage.setItem('highScore', highScore);
+        }
         if (isGameOver()) {
             alert('遊戲結束！');
         }
@@ -89,22 +89,28 @@ function move(direction) {
 }
 
 function moveLine(line, moveTowardsStart) {
-    const nonZeroTiles = line.filter(tile => tile !== 0);
-    const newLine = Array(4).fill(0);
-    let index = moveTowardsStart ? 0 : 3;
-    const step = moveTowardsStart ? 1 : -1;
-
-    for (let i = 0; i < nonZeroTiles.length; i++) {
-        if (i < nonZeroTiles.length - 1 && nonZeroTiles[i] === nonZeroTiles[i + 1]) {
-            newLine[index] = nonZeroTiles[i] * 2;
-            score += newLine[index];
-            i++;
-        } else {
-            newLine[index] = nonZeroTiles[i];
-        }
-        index += step;
+    let newLine = line.filter(tile => tile !== 0);
+    
+    if (!moveTowardsStart) {
+        newLine.reverse();
     }
-
+    
+    for (let i = 0; i < newLine.length - 1; i++) {
+        if (newLine[i] === newLine[i + 1]) {
+            newLine[i] *= 2;
+            score += newLine[i];
+            newLine.splice(i + 1, 1);
+        }
+    }
+    
+    while (newLine.length < 4) {
+        newLine.push(0);
+    }
+    
+    if (!moveTowardsStart) {
+        newLine.reverse();
+    }
+    
     return newLine;
 }
 
@@ -143,6 +149,59 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+
+
 newGameButton.addEventListener('click', initGame);
 
 initGame();
+
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+
+function handleTouchStart(event) {
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
+}
+
+function handleTouchMove(event) {
+    event.preventDefault(); // 防止滾動
+}
+
+function handleTouchEnd(event) {
+    touchEndX = event.changedTouches[0].clientX;
+    touchEndY = event.changedTouches[0].clientY;
+    handleSwipe();
+}
+
+function handleSwipe() {
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+    const minSwipeDistance = 50; // 最小滑動距離
+
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // 水平滑動
+        if (Math.abs(deltaX) > minSwipeDistance) {
+            if (deltaX > 0) {
+                move('ArrowRight');
+            } else {
+                move('ArrowLeft');
+            }
+        }
+    } else {
+        // 垂直滑動
+        if (Math.abs(deltaY) > minSwipeDistance) {
+            if (deltaY > 0) {
+                move('ArrowDown');
+            } else {
+                move('ArrowUp');
+            }
+        }
+    }
+}
+
+// 添加觸摸事件監聽器
+gameBoard.addEventListener('touchstart', handleTouchStart, false);
+gameBoard.addEventListener('touchmove', handleTouchMove, false);
+gameBoard.addEventListener('touchend', handleTouchEnd, false);

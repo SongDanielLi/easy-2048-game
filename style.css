@@ -65,3 +65,24 @@ h1 {
 #new-game:hover {
     background-color: #9f8b77;
 }
+
+@media screen and (max-width: 500px) {
+    #game-board {
+        grid-template-columns: repeat(4, 70px);
+        grid-gap: 5px;
+    }
+
+    .tile {
+        width: 70px;
+        height: 70px;
+        font-size: 24px;
+    }
+
+    h1 {
+        font-size: 36px;
+    }
+
+    #score, #high-score {
+        font-size: 18px;
+    }
+}
