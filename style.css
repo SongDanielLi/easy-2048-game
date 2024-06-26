@@ -23,6 +23,12 @@ h1 {
     color: #776e65;
 }
 
+#high-score {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #776e65;
+}
+
 #game-board {
     display: grid;
     grid-template-columns: repeat(4, 100px);

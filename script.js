@@ -1,6 +1,8 @@
 const gameBoard = document.getElementById('game-board');
 const scoreDisplay = document.querySelector('#score span');
 const newGameButton = document.getElementById('new-game');
+const highScoreDisplay = document.querySelector('#high-score span');
+let highScore = 0;
 let board = [];
 let score = 0;
 
@@ -8,6 +10,8 @@ function initGame() {
     board = Array(4).fill().map(() => Array(4).fill(0));
     score = 0;
     scoreDisplay.textContent = score;
+	highScore = localStorage.getItem('highScore') || 0;
+    highScoreDisplay.textContent = highScore;
     addNewTile();
     addNewTile();
     renderBoard();
@@ -73,6 +77,11 @@ function move(direction) {
         addNewTile();
         renderBoard();
         scoreDisplay.textContent = score;
+		if (score > highScore) {
+			highScore = score;
+			highScoreDisplay.textContent = highScore;
+			localStorage.setItem('highScore', highScore);
+		}
         if (isGameOver()) {
             alert('遊戲結束！');
         }
